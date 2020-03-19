@@ -118,24 +118,6 @@ if (window.onAuthDone) {
 </html>
 """
 
-SSO_TEMPLATE = """
-<html>
-<head>
-<title>Authentication</title>
-</head>
-<body>
-<div>
-    <p>
-    A client is trying to remove a device/add an email address/take over
-    your account. To confirm this action,
-    <a href="%(myurl)s">re-authenticate with single sign-on</a>.
-    If you did not expect this, your account may be compromised!
-    </p>
-</div>
-</body>
-</html>
-"""
-
 
 class AuthRestServlet(RestServlet):
     """
@@ -204,9 +186,7 @@ class AuthRestServlet(RestServlet):
             else:
                 raise SynapseError(400, "Homeserver not configured for SSO.")
 
-            html = SSO_TEMPLATE % {
-                "myurl": sso_redirect_url,
-            }
+            html = self.auth_handler.start_sso_ui_auth(sso_redirect_url)
         else:
             raise SynapseError(404, "Unknown auth stage type")
 

@@ -116,9 +116,12 @@ class AuthHandler(BaseHandler):
 
         self._clock = self.hs.get_clock()
 
-        # Load the SSO redirect confirmation page HTML template
+        # Load the SSO HTML templates.
         self._sso_redirect_confirm_template = load_jinja2_templates(
             hs.config.sso_redirect_confirm_template_dir, ["sso_redirect_confirm.html"],
+        )[0]
+        self._sso_auth_confirm_template = load_jinja2_templates(
+            hs.config.sso_redirect_confirm_template_dir, ["sso_auth_confirm.html"],
         )[0]
 
         self._server_name = hs.config.server_name
@@ -964,6 +967,15 @@ class AuthHandler(BaseHandler):
             return defer_to_thread(self.hs.get_reactor(), _do_validate_hash)
         else:
             return defer.succeed(False)
+
+    def start_sso_ui_auth(self, redirect_url: str) -> str:
+        """
+        Get the HTML for the SSO redirect confirmation page.
+
+        :param redirect_url: The URL to redirect to the SSO provider.
+        :return: The HTML to render.
+        """
+        return self._sso_auth_confirm_template.render(redirect_url=redirect_url,)
 
     def complete_sso_ui_auth(
         self, registered_user_id: str, session_id: str, request: SynapseRequest,
