@@ -1023,7 +1023,6 @@ class AuthHandler(BaseHandler):
         self._save_session(sess)
 
         # TODO Validate the user ID?
-        # TODO Rate limiting?
 
         # Render the HTML and return.
         html_bytes = SUCCESS_TEMPLATE.encode("utf8")
