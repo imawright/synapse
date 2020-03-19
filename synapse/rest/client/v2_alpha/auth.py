@@ -137,10 +137,12 @@ class AuthRestServlet(RestServlet):
 
         # SSO configuration.
         self._saml_enabled = hs.config.saml2_enabled
-        self._saml_handler = hs.get_saml_handler()
+        if self._saml_enabled:
+            self._saml_handler = hs.get_saml_handler()
         self._cas_enabled = hs.config.cas_enabled
-        self._cas_server_url = hs.config.cas_server_url
-        self._cas_service_url = hs.config.cas_service_url
+        if self._cas_enabled:
+            self._cas_server_url = hs.config.cas_server_url
+            self._cas_service_url = hs.config.cas_service_url
 
     def on_GET(self, request, stagetype):
         session = parse_string(request, "session")
