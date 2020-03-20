@@ -227,8 +227,8 @@ class AuthRestServlet(RestServlet):
                     % (CLIENT_API_PREFIX, LoginType.TERMS),
                 }
         elif stagetype == LoginType.SSO:
-            # TODO Display an error page here? Is the 404 below enough?
-            raise SynapseError(404, "SSO should not POST here.")
+            # The SSO fallback workflow should not post here,
+            raise SynapseError(404, "Fallback auth does not support POST requests.")
         else:
             raise SynapseError(404, "Unknown auth stage type")
 
