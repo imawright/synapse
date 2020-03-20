@@ -14,7 +14,7 @@
 # limitations under the License.
 import logging
 import re
-from typing import Tuple
+from typing import Optional, Tuple
 
 import attr
 import saml2
@@ -151,7 +151,19 @@ class SamlHandler:
         else:
             self._auth_handler.complete_sso_login(user_id, request, relay_state)
 
-    async def _map_saml_response_to_user(self, resp_bytes, client_redirect_url):
+    async def _map_saml_response_to_user(
+        self, resp_bytes: str, client_redirect_url: str
+    ) -> Tuple[str, Optional[Saml2SessionData]]:
+        """
+        Given a sample response, retrieve the cached session and user for it.
+
+        Args:
+            resp_bytes: The SAML response.
+            client_redirect_url: The redirect URL passed in by the client.
+
+        Returns:
+             Tuple of the user ID and SAML session associated with this response.
+        """
         try:
             saml2_auth = self._saml_client.parse_authn_request_response(
                 resp_bytes,
@@ -182,8 +194,6 @@ class SamlHandler:
         current_session = self._outstanding_requests_dict.pop(
             saml2_auth.in_response_to, None
         )
-
-        # TODO Handle no request?
 
         remote_user_id = self._user_mapping_provider.get_remote_user_id(
             saml2_auth, client_redirect_url
