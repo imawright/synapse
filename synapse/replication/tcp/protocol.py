@@ -485,7 +485,7 @@ class CommandHandler:
             raise Exception("Not connected")
 
         await self.handler.on_user_sync(
-            self.connection.conn_id, cmd.user_id, cmd.is_syncing, cmd.last_sync_ms
+            cmd.conn_id, cmd.user_id, cmd.is_syncing, cmd.last_sync_ms
         )
 
     async def on_REPLICATE(self, cmd: ReplicateCommand):
