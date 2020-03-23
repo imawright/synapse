@@ -51,6 +51,7 @@ class Saml2SessionData:
 class SamlHandler:
     def __init__(self, hs):
         self._saml_client = Saml2Client(hs.config.saml2_sp_config)
+        self._auth = hs.get_auth()
         self._auth_handler = hs.get_auth_handler()
         self._registration_handler = hs.get_registration_handler()
 
@@ -144,8 +145,9 @@ class SamlHandler:
 
         # Complete the interactive auth session or the login.
         if current_session and current_session.ui_auth_session_id:
+            requester = await self._auth.get_user_by_req(request)
             self._auth_handler.complete_sso_ui_auth(
-                user_id, current_session.ui_auth_session_id, request
+                user_id, current_session.ui_auth_session_id, request, requester
             )
 
         else:
