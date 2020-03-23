@@ -431,6 +431,8 @@ class CommandHandler:
     def __init__(self, hs, handler):
         self.handler = handler
 
+        self.is_master = hs.config.worker.worker_app is None
+
         self.clock = hs.get_clock()
 
         self.streams = {
@@ -487,6 +489,11 @@ class CommandHandler:
         )
 
     async def on_REPLICATE(self, cmd: ReplicateCommand):
+        # We only want to announce positions by the writer of the streams.
+        # Currently this is just the master process.
+        if not self.is_master:
+            return
+
         if not self.connection:
             raise Exception("Not connected")
 
